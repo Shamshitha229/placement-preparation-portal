@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Mock Test | Placement Preparation Portal</title>
+
+<link rel="stylesheet"
+      href="../css/style.css">
+
+<script src="../js/auth.js"></script>
+
+<style>
+
+.container{
+    max-width:1100px;
+    margin:30px auto;
+}
+
+.intro-card{
+
+    background:var(--card-bg);
+
+    border:1px solid var(--border);
+
+    border-radius:15px;
+
+    padding:35px;
+
+    text-align:center;
+
+}
+
+.intro-card h2{
+
+    margin-bottom:10px;
+
+}
+
+.intro-card ul{
+
+    margin-top:20px;
+
+    text-align:left;
+
+    display:inline-block;
+
+}
+
+.test-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.timer{
+
+    font-size:24px;
+
+    font-weight:bold;
+
+    color:red;
+
+}
+
+.question-panel{
+
+    display:grid;
+
+    grid-template-columns:repeat(6,1fr);
+
+    gap:10px;
+
+    margin-bottom:25px;
+
+}
+
+.question-box{
+
+    background:#2d3748;
+
+    padding:12px;
+
+    text-align:center;
+
+    border-radius:8px;
+
+    cursor:pointer;
+
+    color:white;
+
+}
+
+.question-box.active{
+
+    background:#2563eb;
+
+}
+
+.question-box.answered{
+
+    background:#16a34a;
+
+}
+
+.question-card{
+
+    background:white;
+
+    color:black;
+
+    border-radius:12px;
+
+    padding:25px;
+
+}
+
+.option{
+
+    border:1px solid #cccccc;
+
+    border-radius:8px;
+
+    padding:12px;
+
+    margin:10px 0;
+
+    cursor:pointer;
+
+}
+
+.option:hover{
+
+    background:#f2f2f2;
+
+}
+
+.option.selected{
+
+    background:#dbeafe;
+
+    border:2px solid #2563eb;
+
+}
+
+#testSection{
+
+    display:none;
+
+}
+
+.buttons{
+
+    margin-top:25px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav class="navbar">
+
+<div class="navbar-brand">
+
+🎯 PlacePrep
+
+</div>
+
+<div class="navbar-links">
+
+<a href="dashboard.html">Dashboard</a>
+
+<a href="practice.html">Practice</a>
+
+<a href="mocktest.html"
+class="active">Mock Test</a>
+
+<a href="bookmarks.html">Bookmarks</a>
+
+<a href="analytics.html">Analytics</a>
+
+<a href="#"
+onclick="logout()">
+Logout
+</a>
+
+</div>
+
+</nav>
+
+<div class="container">
+
+<!-- INTRO -->
+
+<div
+id="introCard"
+class="intro-card">
+
+<h2>
+
+Mock Test
+
+</h2>
+
+<p>
+
+Complete a 30-question placement mock test within 30 minutes.
+
+</p>
+
+<ul>
+
+<li>✔ 30 Mixed Questions</li>
+
+<li>✔ Timer starts immediately</li>
+
+<li>✔ Navigate freely</li>
+
+<li>✔ Auto submit when time ends</li>
+
+<li>✔ Instant Result</li>
+
+</ul>
+
+<br><br>
+
+<button
+id="startBtn"
+class="btn btn-primary">
+
+Start Mock Test
+
+</button>
+
+</div>
+
+<!-- TEST -->
+
+<div
+id="testSection">
+
+<div class="test-header">
+
+<h2>
+
+Mock Test
+
+</h2>
+
+<div
+id="timer"
+class="timer">
+
+30:00
+
+</div>
+
+<button
+class="btn btn-danger"
+id="submitBtn">
+
+Submit Test
+
+</button>
+
+</div>
+
+<div
+id="questionPanel"
+class="question-panel">
+
+</div>
+
+<div
+id="questionCard"
+class="question-card">
+
+<h3
+id="questionNumber">
+
+</h3>
+
+<h2
+id="questionText">
+
+</h2>
+
+<div
+id="optionsContainer">
+
+</div>
+
+<div
+class="buttons">
+
+<button
+class="btn btn-secondary"
+id="prevBtn">
+
+Previous
+
+</button>
+
+<button
+class="btn btn-primary"
+id="nextBtn">
+
+Next
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+
+checkAuthentication();
+
+let token = localStorage.getItem("token");
+
+let testId = null;
+
+let questions = [];
+
+let answers = {};
+
+let currentQuestion = 0;
+
+let timeRemaining = 1800;
+
+let timer = null;
+// ================= START TEST =================
+
+document.getElementById("startBtn").addEventListener("click", startTest);
+
+document.getElementById("submitBtn").addEventListener("click", () => {
+    submitTest(false);
+});
+
+document.getElementById("prevBtn").addEventListener("click", () => {
+
+    if(currentQuestion > 0){
+
+        currentQuestion--;
+
+        renderQuestion();
+
+        renderQuestionPanel();
+
+    }
+
+});
+
+document.getElementById("nextBtn").addEventListener("click", () => {
+
+    if(currentQuestion < questions.length-1){
+
+        currentQuestion++;
+
+        renderQuestion();
+
+        renderQuestionPanel();
+
+    }
+
+});
+
+async function startTest(){
+
+    const btn = document.getElementById("startBtn");
+
+    btn.disabled = true;
+
+    btn.innerText = "Starting...";
+
+    try{
+
+        const response = await fetch(
+
+            API_BASE_URL + "/mocktests/start",
+
+            {
+
+                method:"POST",
+
+                headers:{
+
+                    "Authorization":"Bearer " + token,
+
+                    "Content-Type":"application/json"
+
+                }
+
+            }
+
+        );
+
+        if(!response.ok){
+
+            throw new Error("Unable to start test");
+
+        }
+
+        const data = await response.json();
+
+        testId = data.testId;
+
+        questions = data.questions;
+
+        answers = {};
+
+        currentQuestion = 0;
+
+        timeRemaining = data.timeLimit || 1800;
+
+        document.getElementById("introCard").style.display="none";
+
+        document.getElementById("testSection").style.display="block";
+
+        renderQuestionPanel();
+
+        renderQuestion();
+
+        startTimer();
+
+    }
+
+    catch(e){
+
+        console.error(e);
+
+        alert(e.message);
+
+        btn.disabled=false;
+
+        btn.innerText="Start Mock Test";
+
+    }
+
+}
+
+// ================= TIMER =================
+
+function startTimer(){
+
+    updateTimer();
+
+    timer = setInterval(()=>{
+
+        timeRemaining--;
+
+        updateTimer();
+
+        if(timeRemaining<=0){
+
+            clearInterval(timer);
+
+            alert("Time Up!");
+
+            submitTest(true);
+
+        }
+
+    },1000);
+
+}
+
+function updateTimer(){
+
+    const mins = Math.floor(timeRemaining/60);
+
+    const secs = timeRemaining%60;
+
+    document.getElementById("timer").innerHTML=
+
+        String(mins).padStart(2,"0")
+
+        +":"
+
+        +String(secs).padStart(2,"0");
+
+}
+
+// ================= QUESTION PANEL =================
+
+function renderQuestionPanel(){
+
+    let html="";
+
+    questions.forEach((q,index)=>{
+
+        let cls="question-box";
+
+        if(index===currentQuestion)
+
+            cls+=" active";
+
+        if(answers[q.id])
+
+            cls+=" answered";
+
+        html+=`
+
+        <div
+
+        class="${cls}"
+
+        onclick="jumpQuestion(${index})">
+
+        ${index+1}
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById("questionPanel").innerHTML=html;
+
+}
+
+function jumpQuestion(index){
+
+    currentQuestion=index;
+
+    renderQuestion();
+
+    renderQuestionPanel();
+
+}
+// ================= RENDER QUESTION =================
+
+function renderQuestion(){
+
+    if(questions.length===0) return;
+
+    const q = questions[currentQuestion];
+
+    document.getElementById("questionNumber").innerHTML =
+        "Question " + (currentQuestion+1) + " of " + questions.length;
+
+    document.getElementById("questionText").innerHTML =
+        q.questionText;
+
+    let html="";
+
+    ["A","B","C","D"].forEach(letter=>{
+
+        const optionText=q["option"+letter];
+
+        let cls="option";
+
+        if(answers[q.id]===letter)
+            cls+=" selected";
+
+        html+=`
+
+        <div
+        class="${cls}"
+        onclick="selectOption('${letter}')">
+
+        <strong>${letter}.</strong>
+
+        ${optionText}
+
+        </div>
+
+        `;
+
+    });
+
+    document.getElementById("optionsContainer").innerHTML=html;
+
+}
+
+// ================= SELECT OPTION =================
+
+function selectOption(letter){
+
+    const q=questions[currentQuestion];
+
+    answers[q.id]=letter;
+
+    renderQuestion();
+
+    renderQuestionPanel();
+
+}
+
+// ================= SUBMIT TEST =================
+
+async function submitTest(auto){
+
+    if(timer)
+        clearInterval(timer);
+
+    if(!auto){
+
+        const unanswered =
+            questions.length -
+            Object.keys(answers).length;
+
+        if(unanswered>0){
+
+            if(!confirm(
+                "You still have "
+                + unanswered +
+                " unanswered questions.\nSubmit anyway?"
+            )){
+
+                startTimer();
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    try{
+
+        const response = await fetch(
+
+            API_BASE_URL + "/mocktests/submit",
+
+            {
+
+                method:"POST",
+
+                headers:{
+
+                    "Authorization":"Bearer "+token,
+
+                    "Content-Type":"application/json"
+
+                },
+
+                body:JSON.stringify({
+
+                    testId:testId,
+
+                    answers:answers,
+
+                    timeTaken:1800-timeRemaining
+
+                })
+
+            }
+
+        );
+
+        if(!response.ok){
+
+            throw new Error("Unable to submit test");
+
+        }
+
+        const result =
+            await response.json();
+
+        alert(
+
+            "Mock Test Completed!\n\n"
+
+            +"Score : "
+
+            +result.score
+
+            +"%\n\n"
+
+            +"Correct : "
+
+            +result.correctAnswers
+
+            +"\nWrong : "
+
+            +result.wrongAnswers
+
+        );
+
+        window.location.href="dashboard.html";
+
+    }
+
+    catch(e){
+
+        console.error(e);
+
+        alert(e.message);
+
+    }
+
+}
+
+// ================= SAFETY =================
+
+window.addEventListener(
+
+"beforeunload",
+
+function(e){
+
+    if(testId && timer){
+
+        e.preventDefault();
+
+        e.returnValue="";
+
+    }
+
+});
+
+</script>
+
+</body>
+
+</html>

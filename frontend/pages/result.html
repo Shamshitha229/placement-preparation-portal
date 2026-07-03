@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Result — PlacePrep</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .result-hero {
+      max-width: 600px; margin: 0 auto 2rem; text-align: center;
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2.5rem;
+    }
+    .score-circle {
+      width: 140px; height: 140px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; margin: 0 auto 1.5rem;
+      border: 6px solid var(--primary);
+      background: rgba(79,70,229,0.08);
+    }
+    .score-circle .score-num { font-size: 2rem; font-weight: 800; }
+    .score-circle .score-lbl { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+    .result-stats { display: flex; justify-content: center; gap: 2rem; margin-top: 1.5rem; flex-wrap: wrap; }
+    .result-stat { text-align: center; }
+    .result-stat .num { font-size: 1.5rem; font-weight: 700; }
+    .result-stat .lbl { font-size: 0.8rem; color: var(--text-muted); }
+
+    .review-list { display: flex; flex-direction: column; gap: 1rem; }
+    .review-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.5rem;
+    }
+    .review-card.unanswered { opacity: 0.85; }
+    .rc-options { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin: 0.75rem 0; font-size: 0.85rem; }
+    .rc-opt { padding: 0.4rem 0.6rem; border-radius: 6px; }
+    .rc-opt.correct { background: rgba(16,185,129,0.15); color: #34d399; font-weight: 600; }
+    .rc-opt.wrong { background: rgba(239,68,68,0.15); color: #f87171; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><div class="logo-icon">🎯</div>PlacePrep</div>
+  <ul class="navbar-nav">
+    <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+    <li><a href="practice.html"  class="nav-link">Practice</a></li>
+    <li><a href="mocktest.html"  class="nav-link">Mock Test</a></li>
+    <li><a href="bookmarks.html" class="nav-link">Bookmarks</a></li>
+    <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+  </ul>
+  <div class="navbar-end" id="navUser"></div>
+</nav>
+
+<div class="page-wrapper">
+  <aside class="sidebar">
+    <a class="sidebar-link" href="dashboard.html"><span class="icon">🏠</span>Dashboard</a>
+    <a class="sidebar-link" href="practice.html"><span class="icon">📚</span>Practice</a>
+    <a class="sidebar-link active" href="mocktest.html"><span class="icon">⏱️</span>Mock Test</a>
+    <a class="sidebar-link" href="bookmarks.html"><span class="icon">🔖</span>Bookmarks</a>
+    <a class="sidebar-link" href="analytics.html"><span class="icon">📊</span>Analytics</a>
+    <a class="sidebar-link" href="profile.html"><span class="icon">👤</span>Profile</a>
+    <div style="flex:1"></div>
+    <a class="sidebar-link" href="#" onclick="Auth.logout()"><span class="icon">🚪</span>Logout</a>
+  </aside>
+
+  <main class="main-content">
+    <div id="resultContent">
+      <div class="spinner"></div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/api.js"></script>
+<script>
+  if (!requireAuth()) throw '';
+  initNavUser('navUser');
+
+  const params = new URLSearchParams(window.location.search);
+  const testId = params.get('testId');
+
+  const CAT_LABELS = {
+    APTITUDE: '🧮 Aptitude',
+    LOGICAL_REASONING: '🧩 Logical',
+    VERBAL_ABILITY: '📝 Verbal',
+    TECHNICAL: '💻 Technical',
+    CODING: '⌨️ Coding'
+  };
+
+  async function loadResult() {
+    if (!testId) {
+      document.getElementById('resultContent').innerHTML = '<div class="text-center text-muted">No test specified.</div>';
+      return;
+    }
+    try {
+      const r = await apiFetch('/mocktests/result/' + testId);
+      const scoreColor = r.score >= 70 ? 'var(--success)' : r.score >= 40 ? 'var(--warning)' : 'var(--danger)';
+
+      let html = `
+        <div class="result-hero">
+          <div class="score-circle" style="border-color:${scoreColor}">
+            <div class="score-num">${r.score}%</div>
+            <div class="score-lbl">Score</div>
+          </div>
+          <h2 style="font-size:1.3rem; font-weight:700;">Test Completed!</h2>
+          <p class="text-muted" style="margin-top:0.25rem">Time taken: ${formatTime(r.timeTaken)}</p>
+          <div class="result-stats">
+            <div class="result-stat"><div class="num text-success">${r.correctAnswers}</div><div class="lbl">Correct</div></div>
+            <div class="result-stat"><div class="num text-danger">${r.wrongAnswers}</div><div class="lbl">Wrong</div></div>
+            <div class="result-stat"><div class="num text-muted">${r.unanswered}</div><div class="lbl">Unanswered</div></div>
+            <div class="result-stat"><div class="num">${r.totalQuestions}</div><div class="lbl">Total</div></div>
+          </div>
+          <div class="mt-3" style="display:flex; gap:0.75rem; justify-content:center">
+            <a href="mocktest.html" class="btn btn-primary">Take Another Test</a>
+            <a href="dashboard.html" class="btn btn-secondary">Back to Dashboard</a>
+          </div>
+        </div>
+
+        <h3 style="margin-bottom:1rem; font-size:1.1rem;">Detailed Review</h3>
+        <div class="review-list">
+      `;
+
+      r.questionDetails.forEach((d, i) => {
+        const status = !d.selectedOption ? 'unanswered' : (d.correct ? 'correct' : 'wrong');
+        const badge = status === 'unanswered'
+          ? '<span class="badge badge-secondary">Unanswered</span>'
+          : status === 'correct'
+            ? '<span class="badge badge-success">Correct</span>'
+            : '<span class="badge badge-danger">Incorrect</span>';
+
+        html += `
+          <div class="review-card ${status === 'unanswered' ? 'unanswered' : ''}">
+            <div class="d-flex justify-between align-center mb-1">
+              <strong>Q${i + 1}.</strong> ${badge}
+            </div>
+            <p style="margin-bottom:0.5rem">${esc(d.questionText)}</p>
+            <div class="rc-options">
+              ${['A','B','C','D'].map(opt => {
+                let cls = '';
+                if (opt === d.correctOption) cls = 'correct';
+                else if (opt === d.selectedOption && !d.correct) cls = 'wrong';
+                return `<div class="rc-opt ${cls}">${opt}. ${esc(d['option' + opt])}</div>`;
+              }).join('')}
+            </div>
+            ${d.explanation ? `<div class="explanation-box">💡 ${esc(d.explanation)}</div>` : ''}
+          </div>
+        `;
+      });
+
+      html += '</div>';
+      document.getElementById('resultContent').innerHTML = html;
+    } catch (e) {
+      showToast('Failed to load result: ' + e.message, 'error');
+    }
+  }
+
+  loadResult();
+</script>
+</body>
+</html>

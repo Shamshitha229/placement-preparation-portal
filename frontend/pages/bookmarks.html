@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookmarks — Placement Preparation Portal</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .bookmark-grid { display: flex; flex-direction: column; gap: 1rem; }
+    .bookmark-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .bookmark-card .bm-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 1rem; margin-bottom: 0.75rem;
+    }
+    .bookmark-card .bm-text { font-size: 0.95rem; line-height: 1.6; margin-bottom: 0.75rem; }
+    .bookmark-card .bm-options {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;
+      font-size: 0.85rem; color: var(--text-muted);
+    }
+    .bm-options .correct-opt { color: var(--success); font-weight: 600; }
+    .remove-btn {
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; font-size: 1.3rem; transition: var(--transition);
+    }
+    .remove-btn:hover { color: var(--danger); }
+    .empty-state { text-align: center; padding: 4rem 2rem; color: var(--text-muted); }
+    .empty-state .icon { font-size: 3rem; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand"><div class="logo-icon">🎯</div>PlacePrep</div>
+  <ul class="navbar-nav">
+    <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
+    <li><a href="practice.html"  class="nav-link">Practice</a></li>
+    <li><a href="mocktest.html"  class="nav-link">Mock Test</a></li>
+    <li><a href="bookmarks.html" class="nav-link active">Bookmarks</a></li>
+    <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+  </ul>
+  <div class="navbar-end" id="navUser"></div>
+</nav>
+
+<div class="page-wrapper">
+  <aside class="sidebar">
+    <a class="sidebar-link" href="dashboard.html"><span class="icon">🏠</span>Dashboard</a>
+    <a class="sidebar-link" href="practice.html"><span class="icon">📚</span>Practice</a>
+    <a class="sidebar-link" href="mocktest.html"><span class="icon">⏱️</span>Mock Test</a>
+    <a class="sidebar-link active" href="bookmarks.html"><span class="icon">🔖</span>Bookmarks</a>
+    <a class="sidebar-link" href="analytics.html"><span class="icon">📊</span>Analytics</a>
+    <a class="sidebar-link" href="profile.html"><span class="icon">👤</span>Profile</a>
+    <div style="flex:1"></div>
+    <a class="sidebar-link" href="#" onclick="Auth.logout()"><span class="icon">🚪</span>Logout</a>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Bookmarked Questions</h1>
+      <p class="page-subtitle">Questions you saved for later revision</p>
+    </div>
+
+    <div id="bookmarkList">
+      <div class="spinner"></div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/auth.js"></script>
+<script src="../js/bookmarks.js"></script>
+</body>
+</html>

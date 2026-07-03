@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Analytics | Placement Preparation Portal</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <script src="../js/auth.js"></script>
+
+    <script defer
+            src="../js/analytics.js"></script>
+
+</head>
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="navbar-brand">
+
+        🎯 PlacePrep
+
+    </div>
+
+    <div class="navbar-links">
+
+        <a href="dashboard.html">
+            Dashboard
+        </a>
+
+        <a href="practice.html">
+            Practice
+        </a>
+
+        <a href="mocktest.html">
+            Mock Test
+        </a>
+
+        <a href="bookmarks.html">
+            Bookmarks
+        </a>
+
+        <a href="analytics.html"
+           class="active">
+
+            Analytics
+
+        </a>
+
+        <a href="#"
+           onclick="logout()">
+
+            Logout
+
+        </a>
+
+    </div>
+
+</nav>
+
+<!-- ================= PAGE ================= -->
+
+<div class="container">
+
+    <h1>
+
+        Progress Analytics
+
+    </h1>
+
+    <p>
+
+        Your placement preparation statistics.
+
+    </p>
+
+    <br>
+
+    <!-- ================= SUMMARY ================= -->
+
+    <div class="card">
+
+        <table
+            class="table">
+
+            <tr>
+
+                <th>Total Attempted</th>
+
+                <td id="totalAttempted">
+
+                    0
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>Correct Answers</th>
+
+                <td id="correctAnswers">
+
+                    0
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>Wrong Answers</th>
+
+                <td id="wrongAnswers">
+
+                    0
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>Accuracy</th>
+
+                <td id="accuracy">
+
+                    0%
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>Bookmarked Questions</th>
+
+                <td id="bookmarks">
+
+                    0
+
+                </td>
+
+            </tr>
+
+            <tr>
+
+                <th>Completed Mock Tests</th>
+
+                <td id="mockTests">
+
+                    0
+
+                </td>
+
+            </tr>
+
+        </table>
+
+    </div>
+
+    <br>
+
+    <!-- ================= CATEGORY TABLE ================= -->
+
+    <div class="card">
+
+        <h2>
+
+            Category Performance
+
+        </h2>
+
+        <br>
+
+        <table
+            class="table">
+
+            <thead>
+
+                <tr>
+
+                    <th>Category</th>
+
+                    <th>Total</th>
+
+                    <th>Correct</th>
+
+                    <th>Accuracy</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="categoryTable">
+                        </tbody>
+
+        </table>
+
+    </div>
+
+    <br>
+
+    <!-- ================= TIPS ================= -->
+
+    <div class="card">
+
+        <h2>
+
+            Performance Tips
+
+        </h2>
+
+        <br>
+
+        <ul>
+
+            <li>
+                ✔ Practice every day to improve your accuracy.
+            </li>
+
+            <li>
+                ✔ Focus more on categories where your accuracy is low.
+            </li>
+
+            <li>
+                ✔ Bookmark difficult questions and revise them later.
+            </li>
+
+            <li>
+                ✔ Take Mock Tests regularly to improve speed.
+            </li>
+
+        </ul>
+
+    </div>
+
+    <br>
+    </div>
+
+</body>
+
+</html>

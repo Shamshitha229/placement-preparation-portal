@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — PlacePrep</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .admin-badge {
+      background: linear-gradient(135deg, var(--danger), #f97316);
+      color: #fff; font-size: 0.7rem; font-weight: 700;
+      padding: 0.2rem 0.6rem; border-radius: 999px; margin-left: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-brand">
+    <div class="logo-icon">🎯</div>
+    PlacePrep <span class="admin-badge">ADMIN</span>
+  </div>
+  <ul class="navbar-nav">
+    <li><a href="admin-dashboard.html" class="nav-link active">Dashboard</a></li>
+    <li><a href="question-management.html" class="nav-link">Questions</a></li>
+  </ul>
+  <div class="navbar-end" id="navUser"></div>
+</nav>
+
+<div class="page-wrapper">
+  <aside class="sidebar">
+    <a class="sidebar-link active" href="admin-dashboard.html"><span class="icon">🏠</span>Dashboard</a>
+    <a class="sidebar-link" href="question-management.html"><span class="icon">📝</span>Questions</a>
+    <div style="flex:1"></div>
+    <a class="sidebar-link" href="#" onclick="Auth.logout()"><span class="icon">🚪</span>Logout</a>
+  </aside>
+
+  <main class="main-content">
+    <div class="page-header">
+      <h1 class="page-title">Admin Dashboard</h1>
+      <p class="page-subtitle">Platform overview and management</p>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card" style="--accent-color: var(--primary)">
+        <div class="stat-icon">👥</div>
+        <div class="stat-value" id="totalStudents">—</div>
+        <div class="stat-label">Total Students</div>
+      </div>
+      <div class="stat-card" style="--accent-color: var(--secondary)">
+        <div class="stat-icon">📚</div>
+        <div class="stat-value" id="totalQuestions">—</div>
+        <div class="stat-label">Total Questions</div>
+      </div>
+      <div class="stat-card" style="--accent-color: var(--warning)">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-value" id="totalMockTests">—</div>
+        <div class="stat-label">Mock Tests Taken</div>
+      </div>
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-header">
+        <span class="card-title">Quick Actions</span>
+      </div>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap">
+        <a href="question-management.html" class="btn btn-primary">➕ Add New Question</a>
+        <a href="question-management.html" class="btn btn-secondary">📝 Manage Questions</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Student Monitoring</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>USN</th>
+              <th>Last Login</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="studentsTable">
+            <tr><td colspan="5" class="text-center text-muted">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="../js/api.js"></script>
+<script>
+  if (!requireAdmin()) throw '';
+  initNavUser('navUser');
+
+  async function loadAdminDashboard() {
+    try {
+      const data = await apiFetch('/admin/dashboard');
+      document.getElementById('totalStudents').textContent  = data.totalStudents;
+      document.getElementById('totalQuestions').textContent = data.totalQuestions;
+      document.getElementById('totalMockTests').textContent = data.totalMockTests;
+    } catch (e) {
+      showToast('Failed to load dashboard stats: ' + e.message, 'error');
+    }
+
+    try {
+      const students = await apiFetch('/admin/students');
+      const tbody = document.getElementById('studentsTable');
+      if (!students.length) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No students registered yet.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = students.map(s => `
+        <tr>
+          <td>${esc(s.name)}</td>
+          <td>${esc(s.email)}</td>
+          <td>${esc(s.usn)}</td>
+          <td>${s.lastLogin === 'Never' ? '<span class="text-muted">Never</span>' : new Date(s.lastLogin).toLocaleString()}</td>
+          <td>${s.isActive ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>'}</td>
+        </tr>
+      `).join('');
+    } catch (e) {
+      showToast('Failed to load students: ' + e.message, 'error');
+    }
+  }
+
+  loadAdminDashboard();
+</script>
+</body>
+</html>
