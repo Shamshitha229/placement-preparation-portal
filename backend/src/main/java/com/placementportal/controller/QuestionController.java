@@ -1,9 +1,9 @@
 package com.placementportal.controller;
 
-import com.placementportal.util.AuthHelper;
 import com.placementportal.dto.QuestionRequest;
 import com.placementportal.dto.QuestionResponse;
 import com.placementportal.service.QuestionService;
+import com.placementportal.util.AuthHelper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +23,10 @@ public class QuestionController {
     public ResponseEntity<List<QuestionResponse>> getAll(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String company,
-            @RequestParam(required = false) String difficulty) {
+            @RequestParam(required = false) String difficulty,
+            @RequestParam(required = false) String keyword) {
         Long userId = tryGetUserId();
-        return ResponseEntity.ok(questionService.getAllQuestions(category, company, difficulty, userId));
+        return ResponseEntity.ok(questionService.getAllQuestions(category, company, difficulty, keyword, userId));
     }
 
     @GetMapping("/{id}")
@@ -36,7 +37,13 @@ public class QuestionController {
 
     @GetMapping("/search")
     public ResponseEntity<List<QuestionResponse>> search(@RequestParam String keyword) {
-        return ResponseEntity.ok(questionService.searchQuestions(keyword));
+        Long userId = tryGetUserId();
+        return ResponseEntity.ok(questionService.searchQuestions(keyword, userId));
+    }
+
+    @GetMapping("/companies")
+    public ResponseEntity<List<String>> getCompanies() {
+        return ResponseEntity.ok(questionService.getCompanies());
     }
 
     @PostMapping

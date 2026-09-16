@@ -16,6 +16,8 @@ public interface ProgressRepository extends JpaRepository<Progress, Long> {
     long countByUserId(Long userId);
     long countByUserIdAndIsCorrect(Long userId, boolean isCorrect);
 
+    List<Progress> findTop10ByUserIdOrderByAttemptedAtDesc(Long userId);
+
     @Query("SELECT p.category, COUNT(p), SUM(CASE WHEN p.isCorrect = true THEN 1 ELSE 0 END) " +
            "FROM Progress p WHERE p.user.id = :userId GROUP BY p.category")
     List<Object[]> getCategoryStats(@Param("userId") Long userId);

@@ -1,12 +1,30 @@
-
-
+/**
+ * Placement Preparation Portal - Authentication Module
+ */
 /* ---------------- LOGIN ---------------- */
-const API_BASE_URL = "http://localhost:8080/api";
 async function loginUser(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
+    const emailEl = document.getElementById("email");
+    const passEl = document.getElementById("password");
+    const submitBtn = event?.target?.querySelector('button[type="submit"]');
+
+    const email = emailEl ? emailEl.value.trim() : "";
+    const password = passEl ? passEl.value.trim() : "";
+
+    if (!email || !password) {
+        if (typeof showToast === "function") {
+            showToast("Please enter both email and password", "warning");
+        } else {
+            alert("Please enter both email and password");
+        }
+        return;
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Logging in...";
+    }
 
     try {
         const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -14,51 +32,82 @@ async function loginUser(event) {
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({
-                email,
-                password
-            })
+            body: JSON.stringify({ email, password })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-
             localStorage.setItem("token", data.token);
             localStorage.setItem("user", JSON.stringify(data));
 
-            alert("Login Successful");
-
-            if (data.role === "ADMIN") {
-                window.location.href = "admin-dashboard.html";
-            } else {
-                window.location.href = "dashboard.html";
+            if (typeof showToast === "function") {
+                showToast("Welcome back, " + (data.name || "Student") + "!", "success");
             }
 
+            setTimeout(() => {
+                if (data.role === "ADMIN") {
+                    window.location.href = "admin-dashboard.html";
+                } else {
+                    window.location.href = "dashboard.html";
+                }
+            }, 600);
         } else {
-            alert(data.message || "Invalid Credentials");
+            const errorMsg = data.message || "Invalid credentials. Please verify your email and password.";
+            if (typeof showToast === "function") {
+                showToast(errorMsg, "error");
+            } else {
+                alert(errorMsg);
+            }
         }
-
     } catch (error) {
-        console.error(error);
-        alert("Server Error");
+        console.error("Login error:", error);
+        const err = "Unable to connect to backend server. Please verify the Spring Boot service is running.";
+        if (typeof showToast === "function") {
+            showToast(err, "error");
+        } else {
+            alert(err);
+        }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Login";
+        }
     }
 }
 
 /* ---------------- REGISTER ---------------- */
-
 async function registerUser(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
 
     const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const usn = document.getElementById("usn").value.trim();
     const password = document.getElementById("password").value.trim();
     const confirmPassword = document.getElementById("confirmPassword").value.trim();
+    const submitBtn = event?.target?.querySelector('button[type="submit"]');
 
     if (password !== confirmPassword) {
-        alert("Passwords do not match");
+        if (typeof showToast === "function") {
+            showToast("Passwords do not match", "warning");
+        } else {
+            alert("Passwords do not match");
+        }
         return;
+    }
+
+    if (password.length < 6) {
+        if (typeof showToast === "function") {
+            showToast("Password must be at least 6 characters", "warning");
+        } else {
+            alert("Password must be at least 6 characters");
+        }
+        return;
+    }
+
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Creating account...";
     }
 
     try {
@@ -68,41 +117,60 @@ async function registerUser(event) {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-    name,
-    email,
-    usn,
-    password,
-    confirmPassword
-})
+                name,
+                email,
+                usn: usn.toUpperCase(),
+                password,
+                confirmPassword
+            })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            alert("Registration Successful");
-            window.location.href = "login.html";
+            if (typeof showToast === "function") {
+                showToast("Account created successfully! Please log in.", "success");
+            } else {
+                alert("Account created successfully! Please log in.");
+            }
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 800);
         } else {
-            alert(data.message || "Registration Failed");
+            const errorMsg = data.message || "Registration failed. Email or USN may already be registered.";
+            if (typeof showToast === "function") {
+                showToast(errorMsg, "error");
+            } else {
+                alert(errorMsg);
+            }
         }
-
     } catch (error) {
-        console.error(error);
-        alert("Server Error");
+        console.error("Registration error:", error);
+        const err = "Unable to connect to server. Please try again.";
+        if (typeof showToast === "function") {
+            showToast(err, "error");
+        } else {
+            alert(err);
+        }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Register";
+        }
     }
 }
 
-/* ---------------- AUTH HELPERS ---------------- */
-
+/* ---------------- HELPERS & GUARDS ---------------- */
 function getToken() {
     return localStorage.getItem("token");
 }
 
 function getCurrentUser() {
-    const user = localStorage.getItem("user");
-
-    if (!user) return null;
-
-    return JSON.parse(user);
+    try {
+        return JSON.parse(localStorage.getItem("user") || "null");
+    } catch (e) {
+        return null;
+    }
 }
 
 function isLoggedIn() {
@@ -112,17 +180,26 @@ function isLoggedIn() {
 function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-
-    window.location.href = "login.html";
+    if (typeof showToast === "function") {
+        showToast("Logged out successfully", "info");
+    }
+    setTimeout(() => {
+        window.location.href = "login.html";
+    }, 400);
 }
 
-/* ---------------- PAGE GUARD ---------------- */
-
 function checkAuthentication() {
-
-    const token = localStorage.getItem("token");
-
-    if (!token) {
+    if (!isLoggedIn()) {
         window.location.href = "login.html";
     }
+}
+
+// Global Auth namespace fallback if api.js not yet loaded
+if (typeof Auth === "undefined") {
+    var Auth = {
+        getToken: getToken,
+        getUser: getCurrentUser,
+        isLoggedIn: isLoggedIn,
+        logout: logout
+    };
 }

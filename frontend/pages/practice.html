@@ -1,20 +1,356 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Practice | Placement Preparation Portal</title>
+
+    <meta name="description"
+          content="Practice placement questions by category — Aptitude, Logical Reasoning, Verbal Ability, Technical, and Coding MCQs.">
+
+    <title>Practice Questions | PlacePrep</title>
 
     <link rel="stylesheet" href="../css/style.css">
 
-    <script src="../js/auth.js"></script>
-    <script defer src="../js/practice.js"></script>
+    <style>
+
+        /* =========================================================
+           PRACTICE SELECTION SECTION
+           ========================================================= */
+
+        .practice-selection-card {
+            max-width: 1050px;
+            margin: 0 auto 1.5rem auto;
+            text-align: center;
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .practice-selection-card::before {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: rgba(99, 102, 241, 0.08);
+            top: -120px;
+            right: -80px;
+            pointer-events: none;
+        }
+
+        .practice-selection-card::after {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: rgba(6, 182, 212, 0.06);
+            bottom: -100px;
+            left: -70px;
+            pointer-events: none;
+        }
+
+        .practice-selection-header {
+            position: relative;
+            z-index: 1;
+            margin-bottom: 2rem;
+        }
+
+        .practice-selection-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 1rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background: linear-gradient(
+                135deg,
+                rgba(99, 102, 241, 0.25),
+                rgba(139, 92, 246, 0.18)
+            );
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            font-size: 2.2rem;
+            box-shadow: 0 12px 35px rgba(99, 102, 241, 0.15);
+        }
+
+        .practice-selection-header h2 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .practice-selection-header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            max-width: 620px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+
+        /* =========================================================
+           CATEGORY CARDS
+           ========================================================= */
+
+        .practice-category-grid {
+            position: relative;
+            z-index: 1;
+
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.85rem;
+
+            margin-bottom: 2rem;
+        }
+
+        .practice-category {
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.025);
+            border-radius: 14px;
+            padding: 1rem 0.7rem;
+
+            cursor: pointer;
+
+            transition:
+                transform 0.25s ease,
+                border-color 0.25s ease,
+                background 0.25s ease,
+                box-shadow 0.25s ease;
+        }
+
+        .practice-category:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.08);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.12);
+        }
+
+        .practice-category.active {
+            border-color: var(--primary-light);
+            background: rgba(99, 102, 241, 0.13);
+            box-shadow:
+                0 0 0 1px rgba(99, 102, 241, 0.15),
+                0 10px 30px rgba(99, 102, 241, 0.14);
+        }
+
+        .practice-category-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0.55rem;
+        }
+
+        .practice-category-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            line-height: 1.25;
+        }
+
+        .practice-category-subtitle {
+            color: var(--text-muted);
+            font-size: 0.68rem;
+            margin-top: 0.3rem;
+            line-height: 1.3;
+        }
+
+
+        /* =========================================================
+           SELECT + START BUTTON
+           ========================================================= */
+
+        .practice-form {
+            position: relative;
+            z-index: 1;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            gap: 1rem;
+        }
+
+        .practice-form > div {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .practice-form label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+            display: block;
+            text-align: left;
+        }
+
+        .practice-form select {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .start-btn {
+            white-space: nowrap;
+            min-width: 210px;
+            padding: 0.9rem 1.5rem;
+            font-size: 0.95rem;
+        }
+
+
+        /* =========================================================
+           PREPARATION TIP
+           ========================================================= */
+
+        .practice-tip {
+            position: relative;
+            z-index: 1;
+
+            margin: 1.75rem auto 0 auto;
+            max-width: 650px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+
+            color: var(--text-muted);
+            font-size: 0.78rem;
+
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .practice-tip strong {
+            color: var(--text);
+        }
+
+
+        /* =========================================================
+           EXISTING PRACTICE STYLES
+           ========================================================= */
+
+        .practice-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .practice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .practice-header h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .practice-header p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .practice-icon {
+            font-size: 2.5rem;
+        }
+
+        .question-title {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin: 1.25rem 0;
+        }
+
+        .option {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 0.85rem 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: rgba(99,102,241,0.06);
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: rgba(99,102,241,0.14);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(34,197,94,0.12);
+        }
+
+        .option.wrong {
+            border-color: var(--danger);
+            background: rgba(239,68,68,0.10);
+        }
+
+        #questionCard .card-header {
+            margin-bottom: 0.5rem;
+        }
+
+        .result-summary {
+            text-align: center;
+            padding: 2rem;
+        }
+
+
+        /* =========================================================
+           RESPONSIVE
+           ========================================================= */
+
+        @media (max-width: 1000px) {
+
+            .practice-category-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .practice-selection-card {
+                padding: 1.5rem;
+            }
+
+            .practice-category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .practice-selection-header h2 {
+                font-size: 1.35rem;
+            }
+
+        }
+
+        @media (max-width: 420px) {
+
+            .practice-category-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
 </head>
 
 <body>
 
-<!-- ================= NAVBAR ================= -->
+<!-- =========================================================
+     NAVBAR
+     ========================================================= -->
 
 <nav class="navbar">
 
@@ -24,241 +360,583 @@
     </div>
 
     <ul class="navbar-nav">
-        <li><a href="dashboard.html" class="nav-link">Dashboard</a></li>
-        <li><a href="practice.html" class="nav-link active">Practice</a></li>
-        <li><a href="mocktest.html" class="nav-link">Mock Test</a></li>
-        <li><a href="bookmarks.html" class="nav-link">Bookmarks</a></li>
-        <li><a href="analytics.html" class="nav-link">Analytics</a></li>
+
+        <li>
+            <a href="dashboard.html" class="nav-link">
+                Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="practice.html" class="nav-link active">
+                Practice
+            </a>
+        </li>
+
+        <li>
+            <a href="mocktest.html" class="nav-link">
+                Mock Test
+            </a>
+        </li>
+
+        <li>
+            <a href="bookmarks.html" class="nav-link">
+                Bookmarks
+            </a>
+        </li>
+
+        <li>
+            <a href="analytics.html" class="nav-link">
+                Analytics
+            </a>
+        </li>
+
     </ul>
 
-    <div class="navbar-actions">
-        <button class="btn btn-outline" onclick="logout()">
-            Logout
-        </button>
-    </div>
+    <div class="navbar-end" id="navUser"></div>
 
 </nav>
 
-<!-- ================= MAIN ================= -->
 
-<div class="container">
+<!-- =========================================================
+     PAGE WRAPPER
+     ========================================================= -->
 
-    <div class="page-header">
+<div class="page-wrapper">
 
-        <h1>
-            📖 Practice Questions
-        </h1>
+    <!-- SIDEBAR -->
 
-        <p class="text-muted">
-            Strengthen your placement preparation by practicing company-level questions from different categories.
-        </p>
+    <aside class="sidebar">
 
-    </div>
+        <a class="sidebar-link"
+           href="dashboard.html">
+            <span class="icon">🏠</span>
+            Dashboard
+        </a>
 
-    <!-- ================= CATEGORY CARD ================= -->
+        <a class="sidebar-link active"
+           href="practice.html">
+            <span class="icon">📚</span>
+            Practice
+        </a>
 
-    <div class="practice-card">
+        <a class="sidebar-link"
+           href="mocktest.html">
+            <span class="icon">⏱️</span>
+            Mock Test
+        </a>
 
-        <div class="practice-header">
+        <a class="sidebar-link"
+           href="bookmarks.html">
+            <span class="icon">🔖</span>
+            Bookmarks
+        </a>
 
-            <div>
+        <a class="sidebar-link"
+           href="analytics.html">
+            <span class="icon">📊</span>
+            Analytics
+        </a>
 
-                <h2>Select Practice Category</h2>
+        <a class="sidebar-link"
+           href="profile.html">
+            <span class="icon">👤</span>
+            Profile
+        </a>
+
+        <div style="flex:1"></div>
+
+        <a class="sidebar-link"
+           href="#"
+           onclick="Auth.logout()">
+            <span class="icon">🚪</span>
+            Logout
+        </a>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN CONTENT
+         ===================================================== -->
+
+    <main class="main-content">
+
+        <!-- PAGE HEADER -->
+
+        <div class="page-header">
+
+            <h1 class="page-title">
+                📖 Practice Questions
+            </h1>
+
+            <p class="page-subtitle">
+                Strengthen your preparation by practicing
+                company-level questions from different categories.
+            </p>
+
+        </div>
+
+
+        <!-- =================================================
+             CATEGORY SELECTOR
+             ================================================= -->
+
+        <div class="practice-card practice-selection-card"
+             id="selectCard">
+
+
+            <!-- HEADER -->
+
+            <div class="practice-selection-header">
+
+                <div class="practice-selection-icon">
+                    🎯
+                </div>
+
+                <h2>
+                    Choose Your Preparation Path
+                </h2>
 
                 <p>
-                    Choose a category and begin solving questions.
+                    Select a category and sharpen the skills
+                    you need to crack your placement interviews.
                 </p>
 
             </div>
 
-            <div class="practice-icon">
-                📚
+
+            <!-- =================================================
+                 CATEGORY QUICK SELECT
+                 ================================================= -->
+
+            <div class="practice-category-grid">
+
+
+                <div class="practice-category"
+                     data-category="APTITUDE">
+
+                    <div class="practice-category-icon">
+                        🧮
+                    </div>
+
+                    <div class="practice-category-title">
+                        Aptitude
+                    </div>
+
+                    <div class="practice-category-subtitle">
+                        Numbers & Logic
+                    </div>
+
+                </div>
+
+
+                <div class="practice-category"
+                     data-category="LOGICAL_REASONING">
+
+                    <div class="practice-category-icon">
+                        🧩
+                    </div>
+
+                    <div class="practice-category-title">
+                        Logical Reasoning
+                    </div>
+
+                    <div class="practice-category-subtitle">
+                        Patterns & Problems
+                    </div>
+
+                </div>
+
+
+                <div class="practice-category"
+                     data-category="VERBAL_ABILITY">
+
+                    <div class="practice-category-icon">
+                        📝
+                    </div>
+
+                    <div class="practice-category-title">
+                        Verbal Ability
+                    </div>
+
+                    <div class="practice-category-subtitle">
+                        Grammar & Vocabulary
+                    </div>
+
+                </div>
+
+
+                <div class="practice-category"
+                     data-category="TECHNICAL">
+
+                    <div class="practice-category-icon">
+                        💻
+                    </div>
+
+                    <div class="practice-category-title">
+                        Technical MCQs
+                    </div>
+
+                    <div class="practice-category-subtitle">
+                        CS Core Concepts
+                    </div>
+
+                </div>
+
+
+                <div class="practice-category"
+                     data-category="CODING">
+
+                    <div class="practice-category-icon">
+                        ⌨️
+                    </div>
+
+                    <div class="practice-category-title">
+                        Coding
+                    </div>
+
+                    <div class="practice-category-subtitle">
+                        Algorithms & Logic
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 EXISTING SELECT + START BUTTON
+                 ================================================= -->
+
+            <div class="practice-form">
+
+                <div>
+
+                    <label for="categorySelect">
+                        Category
+                    </label>
+
+                    <select id="categorySelect"
+                            class="form-control">
+
+                        <option value="">
+                            — Choose Category —
+                        </option>
+
+                        <option value="APTITUDE">
+                            🧮 Aptitude
+                        </option>
+
+                        <option value="LOGICAL_REASONING">
+                            🧩 Logical Reasoning
+                        </option>
+
+                        <option value="VERBAL_ABILITY">
+                            📝 Verbal Ability
+                        </option>
+
+                        <option value="TECHNICAL">
+                            💻 Technical MCQs
+                        </option>
+
+                        <option value="CODING">
+                            ⌨️ Coding
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <button id="startPracticeBtn"
+                        class="btn btn-primary start-btn"
+                        onclick="startPractice()">
+
+                    🚀 Start Practice
+
+                </button>
+
+            </div>
+
+
+            <!-- TIP -->
+
+            <div class="practice-tip">
+
+                <span>💡</span>
+
+                <span>
+                    <strong>Preparation tip:</strong>
+                    Practice consistently instead of cramming before placement tests.
+                </span>
+
             </div>
 
         </div>
 
-        <div class="practice-form">
 
-            <label>Select Category</label>
+        <!-- =================================================
+             QUESTION CARD
+             ================================================= -->
 
-            <select
-                id="categorySelect"
-                class="form-control">
+        <div id="questionCard"
+             class="card mt-4"
+             style="display:none;">
 
-                <option value="">Choose Category</option>
+            <div class="card-header">
 
-                <option value="APTITUDE">
-                    Aptitude
-                </option>
+                <span class="card-title"
+                      id="questionNumber">
 
-                <option value="LOGICAL_REASONING">
-                    Logical Reasoning
-                </option>
+                    Question 1
 
-                <option value="VERBAL_ABILITY">
-                    Verbal Ability
-                </option>
+                </span>
 
-                <option value="TECHNICAL">
-                    Technical MCQs
-                </option>
+                <span class="badge badge-primary"
+                      id="questionCategory">
 
-                <option value="CODING">
-                    Coding
-                </option>
+                    Practice
 
-            </select>
+                </span>
 
-            <button
-                id="startPracticeBtn"
-                class="btn btn-primary start-btn"
-                onclick="startPractice()">
+            </div>
 
-                🚀 Start Practice
 
-            </button>
+            <h2 id="questionText"
+                class="question-title">
+            </h2>
 
-        </div>
 
-    </div>
+            <div id="option-A"
+                 class="option"
+                 onclick="selectOption('A')">
 
-    <!-- ================= QUESTION CARD ================= -->
+                <strong>A.</strong>
+                <span id="optionA"></span>
 
-    <div
-        id="questionCard"
-        class="card mt-4"
-        style="display:none;">
+            </div>
 
-        <div class="card-header">
 
-            <h3 id="questionNumber">
-                Question 1
-            </h3>
+            <div id="option-B"
+                 class="option"
+                 onclick="selectOption('B')">
 
-            <span class="badge badge-primary">
-                Practice
-            </span>
+                <strong>B.</strong>
+                <span id="optionB"></span>
 
-        </div>
+            </div>
 
-        <h2
-            id="questionText"
-            class="question-title">
-        </h2>
 
-        <div
-            id="option-A"
-            class="option"
-            onclick="selectOption('A')">
+            <div id="option-C"
+                 class="option"
+                 onclick="selectOption('C')">
 
-            <strong>A.</strong>
+                <strong>C.</strong>
+                <span id="optionC"></span>
 
-            <span id="optionA"></span>
+            </div>
 
-        </div>
 
-        <div
-            id="option-B"
-            class="option"
-            onclick="selectOption('B')">
+            <div id="option-D"
+                 class="option"
+                 onclick="selectOption('D')">
 
-            <strong>B.</strong>
+                <strong>D.</strong>
+                <span id="optionD"></span>
 
-            <span id="optionB"></span>
+            </div>
 
-        </div>
 
-        <div
-            id="option-C"
-            class="option"
-            onclick="selectOption('C')">
+            <div style="
+                display:flex;
+                gap:0.75rem;
+                flex-wrap:wrap;
+                margin-top:1.5rem;
+            ">
 
-            <strong>C.</strong>
+                <button class="btn btn-success"
+                        onclick="submitAnswer()">
 
-            <span id="optionC"></span>
+                    ✔ Submit Answer
 
-        </div>
+                </button>
 
-        <div
-            id="option-D"
-            class="option"
-            onclick="selectOption('D')">
 
-            <strong>D.</strong>
+                <button class="btn btn-secondary"
+                        onclick="bookmarkQuestion()">
 
-            <span id="optionD"></span>
+                    🔖 Bookmark
 
-        </div>
+                </button>
 
-        <div
-            style="display:flex;gap:15px;flex-wrap:wrap;margin-top:30px;">
 
-            <button
-                class="btn btn-success"
-                onclick="submitAnswer()">
+                <button class="btn btn-primary"
+                        onclick="nextQuestion()">
 
-                ✔ Submit
+                    Next →
 
-            </button>
+                </button>
 
-            <button
-                class="btn btn-secondary"
-                onclick="bookmarkQuestion()">
+            </div>
 
-                🔖 Bookmark
 
-            </button>
-
-            <button
-                class="btn btn-primary"
-                onclick="nextQuestion()">
-
-                Next →
-
-            </button>
+            <div id="explanation"
+                 style="display:none; margin-top:1rem;">
+            </div>
 
         </div>
 
-        <div
-            id="explanation"
-            class="card mt-3"
-            style="display:none;">
+
+        <!-- =================================================
+             RESULT CARD
+             ================================================= -->
+
+        <div id="resultCard"
+             class="card mt-4"
+             style="display:none;">
+
+            <div class="result-summary">
+
+                <div style="
+                    font-size:3.5rem;
+                    margin-bottom:0.5rem;
+                ">
+                    🎉
+                </div>
+
+
+                <h2 style="
+                    font-size:1.4rem;
+                    font-weight:700;
+                    margin-bottom:0.5rem;
+                ">
+                    Practice Completed!
+                </h2>
+
+
+                <div id="finalScore"></div>
+
+
+                <div style="
+                    display:flex;
+                    gap:0.75rem;
+                    justify-content:center;
+                    margin-top:1.5rem;
+                    flex-wrap:wrap;
+                ">
+
+                    <button class="btn btn-primary btn-lg"
+                            onclick="restartPractice()">
+
+                        🔄 Practice Again
+
+                    </button>
+
+
+                    <a href="dashboard.html"
+                       class="btn btn-secondary btn-lg">
+
+                        🏠 Dashboard
+
+                    </a>
+
+
+                    <a href="analytics.html"
+                       class="btn btn-outline"
+                       style="padding:0.75rem 1.5rem;">
+
+                        📊 View Analytics
+
+                    </a>
+
+                </div>
+
+            </div>
 
         </div>
 
-    </div>
-
-    <!-- ================= RESULT ================= -->
-
-    <div
-        id="resultCard"
-        class="card mt-4"
-        style="display:none;text-align:center;">
-
-        <h2>
-
-            🎉 Practice Completed
-
-        </h2>
-
-        <h3
-            id="finalScore"
-            class="mt-3">
-
-        </h3>
-
-        <button
-            class="btn btn-primary btn-lg mt-3"
-            onclick="location.reload()">
-
-            Practice Again
-
-        </button>
-
-    </div>
+    </main>
 
 </div>
 
-</body>
 
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script src="../js/api.js"></script>
+<script src="../js/auth.js"></script>
+<script src="../js/practice.js"></script>
+
+
+<!-- =========================================================
+     CATEGORY CARD INTERACTION
+     ========================================================= -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const categoryCards =
+        document.querySelectorAll(".practice-category");
+
+    const categorySelect =
+        document.getElementById("categorySelect");
+
+
+    categoryCards.forEach(card => {
+
+        card.addEventListener("click", () => {
+
+            const category =
+                card.dataset.category;
+
+            /*
+             * Select the same value
+             * in the existing dropdown.
+             */
+            categorySelect.value = category;
+
+
+            /*
+             * Highlight selected category.
+             */
+            categoryCards.forEach(c =>
+                c.classList.remove("active")
+            );
+
+            card.classList.add("active");
+
+        });
+
+    });
+
+
+    /*
+     * If the user uses the dropdown,
+     * update the category card highlight.
+     */
+    categorySelect.addEventListener("change", () => {
+
+        const selected =
+            categorySelect.value;
+
+        categoryCards.forEach(card => {
+
+            card.classList.toggle(
+                "active",
+                card.dataset.category === selected
+            );
+
+        });
+
+    });
+
+});
+
+</script>
+
+</body>
 </html>

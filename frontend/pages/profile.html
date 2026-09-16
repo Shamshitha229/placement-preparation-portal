@@ -6,31 +6,193 @@
   <title>Profile — PlacePrep</title>
   <link rel="stylesheet" href="../css/style.css">
   <style>
-    .profile-grid { display: grid; grid-template-columns: 280px 1fr; gap: 1.5rem; }
-    @media (max-width: 768px) { .profile-grid { grid-template-columns: 1fr; } }
-    .profile-card { text-align: center; }
-    .avatar {
-      width: 88px; height: 88px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem; font-weight: 700; color: #fff;
-      margin: 0 auto 1rem;
+  /* =========================
+     PROFILE PAGE
+     ========================= */
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 270px minmax(0, 680px);
+    gap: 1.75rem;
+    align-items: start;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  /* Profile summary card */
+  .profile-card {
+    text-align: center;
+    padding: 1.75rem;
+  }
+
+  .avatar {
+    width: 82px;
+    height: 82px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 auto 1rem;
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.25);
+  }
+
+  .profile-card h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.35rem;
+    word-break: break-word;
+  }
+
+  .profile-card .text-muted {
+    word-break: break-word;
+    line-height: 1.4;
+  }
+
+  .profile-card .usn-badge {
+    margin-top: 0.75rem;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.84rem;
+  }
+
+  .info-row:last-child {
+    border-bottom: none;
+  }
+
+  .info-row span:first-child {
+    color: var(--text-muted);
+  }
+
+  .info-row span:last-child {
+    font-weight: 600;
+    text-align: right;
+  }
+
+  /* Profile settings card */
+  .profile-settings-card {
+    padding: 1.5rem 1.75rem;
+  }
+
+  .tab-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tab-btn {
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.84rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: var(--transition);
+  }
+
+  .tab-btn:hover {
+    color: var(--text);
+    background: var(--dark-3);
+  }
+
+  .tab-btn.active {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  /* Form */
+  .profile-settings-card .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .profile-settings-card .form-label {
+    display: block;
+    margin-bottom: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  .profile-settings-card .form-control {
+    height: 44px;
+    font-size: 0.88rem;
+    border-radius: 8px;
+  }
+
+  .profile-settings-card input:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .profile-settings-card .form-error {
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+  }
+
+  .profile-settings-card .btn {
+    margin-top: 0.25rem;
+    padding: 0.65rem 1.1rem;
+    font-size: 0.84rem;
+  }
+
+  /* Alerts */
+  #infoAlert,
+  #passAlert {
+    margin-bottom: 0.9rem;
+  }
+
+  /* Page header */
+  .main-content .page-header {
+    margin-bottom: 1.5rem;
+  }
+
+  /* Mobile */
+  @media (max-width: 900px) {
+    .profile-grid {
+      grid-template-columns: 1fr;
+      max-width: 680px;
     }
-    .profile-card h3 { font-size: 1.1rem; margin-bottom: 0.25rem; }
-    .profile-card .usn-badge { margin-top: 0.5rem; }
-    .info-row { display: flex; justify-content: space-between; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-    .info-row:last-child { border-bottom: none; }
-    .info-row span:first-child { color: var(--text-muted); }
-    .tab-buttons { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+
+    .profile-card {
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .profile-settings-card {
+      padding: 1.25rem;
+    }
+
+    .tab-buttons {
+      flex-direction: column;
+    }
+
     .tab-btn {
-      padding: 0.5rem 1.2rem; border-radius: var(--radius-sm); cursor: pointer;
-      background: var(--dark-3); color: var(--text-muted); font-size: 0.85rem; font-weight: 600;
-      border: none; transition: var(--transition);
+      width: 100%;
+      text-align: center;
     }
-    .tab-btn.active { background: var(--primary); color: #fff; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-  </style>
+  }
+</style>
 </head>
 <body>
 
@@ -133,16 +295,18 @@
   const user = Auth.getUser();
 
   function loadProfile() {
-    document.getElementById('avatarInitial').textContent = user.name.charAt(0).toUpperCase();
-    document.getElementById('pName').textContent  = user.name;
-    document.getElementById('pEmail').textContent = user.email;
-    document.getElementById('pUsn').textContent   = user.usn;
-    document.getElementById('pRole').textContent  = user.role;
+    if (!user) return;
+    const initial = (user.name || "S").charAt(0).toUpperCase();
+    document.getElementById('avatarInitial').textContent = initial;
+    document.getElementById('pName').textContent  = user.name  || '—';
+    document.getElementById('pEmail').textContent = user.email || '—';
+    document.getElementById('pUsn').textContent   = user.usn   || '—';
+    document.getElementById('pRole').textContent  = user.role  || 'STUDENT';
     document.getElementById('pSince').textContent = 'Active member';
 
-    document.getElementById('editName').value  = user.name;
-    document.getElementById('editEmail').value = user.email;
-    document.getElementById('editUsn').value   = user.usn;
+    document.getElementById('editName').value  = user.name  || '';
+    document.getElementById('editEmail').value = user.email || '';
+    document.getElementById('editUsn').value   = user.usn   || '';
   }
 
   function switchTab(tab) {
@@ -152,28 +316,91 @@
     document.getElementById('tab-' + tab).classList.add('active');
   }
 
-  document.getElementById('infoForm').addEventListener('submit', (e) => {
+  // ---- Profile info update ----
+  document.getElementById('infoForm').addEventListener('submit', async (e) => {
     e.preventDefault();
-    // Note: backend profile-update endpoint not implemented in this version;
-    // name change is reflected locally for display purposes.
-    const newName = document.getElementById('editName').value;
-    user.name = newName;
-    localStorage.setItem('user', JSON.stringify(user));
-    document.getElementById('infoAlert').innerHTML = '<div class="alert alert-success">Profile updated locally. Contact admin to sync changes server-side.</div>';
-    loadProfile();
-    showToast('Profile updated', 'success');
-  });
+    const alertEl = document.getElementById('infoAlert');
+    const newName = document.getElementById('editName').value.trim();
+    const btn = e.target.querySelector('button[type="submit"]');
 
-  document.getElementById('passwordForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const pass = document.getElementById('newPassword').value;
-    const conf = document.getElementById('confirmNewPassword').value;
-    const alertEl = document.getElementById('passAlert');
-    if (pass !== conf) {
-      alertEl.innerHTML = '<div class="alert alert-danger">New passwords do not match.</div>';
+    if (!newName) {
+      alertEl.innerHTML = '<div class="alert alert-danger">Name cannot be empty.</div>';
       return;
     }
-    alertEl.innerHTML = '<div class="alert alert-info">Password change requires a dedicated backend endpoint (not included in this build). Please contact support.</div>';
+
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      await apiFetch('/users/profile', {
+        method: 'PUT',
+        body: JSON.stringify({ name: newName })
+      });
+      user.name = newName;
+      localStorage.setItem('user', JSON.stringify(user));
+      alertEl.innerHTML = '<div class="alert alert-success">✅ Profile updated successfully!</div>';
+      loadProfile();
+      initNavUser('navUser');
+      showToast('Profile updated!', 'success');
+    } catch (err) {
+      // Fallback: update locally if backend endpoint not available
+      user.name = newName;
+      localStorage.setItem('user', JSON.stringify(user));
+      alertEl.innerHTML = '<div class="alert alert-success">✅ Profile updated locally.</div>';
+      loadProfile();
+      showToast('Profile updated locally.', 'info');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Save Changes';
+    }
+  });
+
+  // ---- Password change (calls real backend endpoint) ----
+  document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const alertEl = document.getElementById('passAlert');
+    const currentPass = document.getElementById('currentPassword').value;
+    const newPass     = document.getElementById('newPassword').value;
+    const confPass    = document.getElementById('confirmNewPassword').value;
+    const btn = e.target.querySelector('button[type="submit"]');
+
+    alertEl.innerHTML = '';
+
+    if (newPass !== confPass) {
+      alertEl.innerHTML = '<div class="alert alert-danger">❌ New passwords do not match.</div>';
+      return;
+    }
+
+    if (newPass.length < 6) {
+      alertEl.innerHTML = '<div class="alert alert-danger">❌ Password must be at least 6 characters.</div>';
+      return;
+    }
+
+    btn.disabled    = true;
+    btn.textContent = 'Updating…';
+
+    try {
+      await apiFetch('/users/change-password', {
+        method: 'PUT',
+        body: JSON.stringify({
+          currentPassword: currentPass,
+          newPassword:     newPass,
+          confirmPassword: confPass
+        })
+      });
+      alertEl.innerHTML = '<div class="alert alert-success">✅ Password updated successfully! Please login again.</div>';
+      showToast('Password changed successfully!', 'success');
+      e.target.reset();
+      // Auto-logout after password change for security
+      setTimeout(() => Auth.logout(), 2500);
+    } catch (err) {
+      const msg = err.message || 'Failed to change password. Check your current password.';
+      alertEl.innerHTML = `<div class="alert alert-danger">❌ ${msg}</div>`;
+      showToast(msg, 'error');
+    } finally {
+      btn.disabled    = false;
+      btn.textContent = 'Update Password';
+    }
   });
 
   loadProfile();

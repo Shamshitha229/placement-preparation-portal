@@ -120,7 +120,7 @@
           <td>${esc(s.name)}</td>
           <td>${esc(s.email)}</td>
           <td>${esc(s.usn)}</td>
-          <td>${s.lastLogin === 'Never' ? '<span class="text-muted">Never</span>' : new Date(s.lastLogin).toLocaleString()}</td>
+          <td>${(!s.lastLogin || s.lastLogin === 'Never') ? '<span class="text-muted">Never</span>' : new Date(s.lastLogin).toLocaleString()}</td>
           <td>${s.isActive ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Inactive</span>'}</td>
         </tr>
       `).join('');
